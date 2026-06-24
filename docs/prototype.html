@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pitch-Caller — Interactive Demo</title>
+<style>
+  *{box-sizing:border-box;}
+  body{margin:0;background:radial-gradient(1200px 600px at 50% -10%,#13233f,#0a0f1a 60%);color:#e9edf4;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh;}
+  .wrap{max-width:1060px;margin:0 auto;padding:36px 22px 70px;}
+  .hero{text-align:center;margin-bottom:8px;}
+  .hero h1{font-size:30px;margin:0 0 6px;letter-spacing:-.4px;}
+  .hero p{margin:0;color:#9aa7bd;font-size:16px;}
+  .hint{text-align:center;color:#7f8ca3;font-size:13.5px;margin:14px auto 26px;max-width:560px;}
+  .hint b{color:#cdd6e6;}
+
+  .stage{display:flex;gap:38px;justify-content:center;align-items:flex-start;flex-wrap:wrap;}
+
+  .phone{width:258px;background:#000;border-radius:42px;box-shadow:0 0 0 10px #20262f,0 26px 60px rgba(0,0,0,.5);
+    display:flex;flex-direction:column;overflow:hidden;padding:16px 14px;gap:11px;flex:none;}
+  .topbar{display:flex;align-items:center;gap:9px;}
+  .homebtn{width:32px;height:32px;background:#2c2c2e;border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+  .homebtn:active{background:#3a3a3c;}
+  .house{fill:none;stroke:#e5e5ea;stroke-width:2;stroke-linejoin:round;stroke-linecap:round;}
+  .who{flex:1;font-size:13px;color:#aeaeb2;font-weight:700;}
+  .ack{font-size:12px;color:#30d158;font-weight:700;letter-spacing:.3px;transition:transform .2s;}
+  .ack.pulse{transform:scale(1.12);}
+
+  .tabs{display:flex;background:#1c1c1e;border-radius:11px;padding:3px;gap:3px;}
+  .tab{flex:1;text-align:center;padding:9px 0;border-radius:9px;font-weight:700;font-size:13px;color:#8e8e93;cursor:pointer;user-select:none;}
+  .tab.on{background:#3a3a3c;color:#fff;}
+
+  .lbl{font-size:10px;letter-spacing:1.5px;color:#8e8e93;font-weight:700;}
+  .presets{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+  .pre{background:#2c2c2e;border-radius:9px;padding:10px 0;text-align:center;font-weight:800;font-size:13px;color:#fff;cursor:pointer;}
+  .pre small{display:block;font-size:9.5px;color:#8e8e93;font-weight:600;margin-top:1px;}
+  .pre.on{background:#0a84ff;}.pre.on small{color:#cfe6ff;}
+  .pills{display:flex;gap:5px;}
+  .pill{flex:1;text-align:center;padding:9px 0;border-radius:8px;background:#2c2c2e;color:#e5e5ea;font-weight:700;font-size:14px;cursor:pointer;}
+  .pill.on{background:#0a84ff;color:#fff;}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);gap:6px;height:128px;}
+  .gc{background:#2c2c2e;border-radius:8px;cursor:pointer;}
+  .gc.sel{background:#0a84ff;box-shadow:0 0 12px #0a84ff;}
+
+  .plist{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+  .pl{background:#2c2c2e;border-radius:10px;padding:13px 0;text-align:center;font-weight:800;font-size:13.5px;color:#ff9f0a;cursor:pointer;}
+  .pl.on{background:#ff9f0a;color:#000;}
+
+  .pa-wrap{display:flex;flex-direction:column;align-items:center;gap:14px;padding:6px 0;}
+  .pa-opts{display:flex;gap:8px;}
+  .pa{background:#2c2c2e;border-radius:9px;padding:10px 13px;font-weight:800;font-size:13px;color:#fff;cursor:pointer;}
+  .pa.on{background:#ff9f0a;color:#000;}
+
+  .send-row{display:flex;justify-content:center;margin-top:2px;}
+  .send{background:#0a84ff;color:#fff;font-weight:800;font-size:15px;padding:12px 42px;border-radius:11px;cursor:pointer;
+    box-shadow:0 0 14px rgba(10,132,255,.5);transition:transform .08s;user-select:none;}
+  .send:active{transform:scale(.96);}
+
+  .watches{display:grid;grid-template-columns:repeat(3,auto);gap:26px 22px;}
+  @media(max-width:560px){.watches{gap:14px;}}
+  .wcol{text-align:center;}
+  .watch{width:172px;height:212px;background:#000;border-radius:40px;box-shadow:0 0 0 9px #20262f,0 18px 44px rgba(0,0,0,.5);
+    display:flex;flex-direction:column;overflow:hidden;position:relative;}
+  .watch.buzz{animation:buzz .45s;}
+  .watch.flash::after{content:"";position:absolute;inset:0;border-radius:31px;box-shadow:inset 0 0 0 3px #30d158;animation:fade 1s forwards;pointer-events:none;}
+  @keyframes buzz{0%,100%{transform:translateX(0)}15%{transform:translateX(-4px)}30%{transform:translateX(4px)}45%{transform:translateX(-3px)}60%{transform:translateX(3px)}75%{transform:translateX(-2px)}}
+  @keyframes fade{from{opacity:1}to{opacity:0}}
+  .wname{margin-top:11px;font-weight:700;font-size:13.5px;color:#cdd6e6;}
+  .wrole{font-size:11.5px;color:#7f8ca3;}
+
+  .banner{background:#ff9f0a;color:#000;font-weight:800;font-size:12px;padding:5px 0;letter-spacing:1px;text-align:center;}
+  .b-grid{flex:1;padding:10px;}
+  .zone{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);gap:4px;height:100%;}
+  .z{background:#2c2c2e;border-radius:6px;}
+  .z.hot{background:#0a84ff;box-shadow:0 0 14px #0a84ff;display:flex;align-items:center;justify-content:center;color:#fff;font-size:21px;font-weight:800;}
+  .b-foot{padding:5px 0 9px;font-size:13px;color:#aeaeb2;font-weight:600;letter-spacing:1px;text-align:center;}
+  .fw{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:6px;}
+  .ftitle{font-size:21px;font-weight:800;line-height:1;}
+  .fsub{font-size:12.5px;color:#aeaeb2;font-weight:600;letter-spacing:1px;}
+  .ready .ftitle{color:#48484a;}.ready .fsub{color:#48484a;}
+
+  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#0a84ff;color:#fff;
+    font-weight:700;font-size:14px;padding:11px 20px;border-radius:30px;opacity:0;transition:.25s;pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,.4);}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  .foot{text-align:center;color:#5d6982;font-size:12.5px;margin-top:34px;}
+  .reset{display:inline-block;margin-top:8px;color:#7f8ca3;font-size:12.5px;text-decoration:underline;cursor:pointer;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <h1>⚾ Call it from your phone. See it on the watch.</h1>
+    <p>An interactive concept — tap around and send a few calls.</p>
+  </div>
+  <div class="hint">Build a call on the phone — tap a <b>preset</b>, or pick a <b>pitch</b> + a <b>spot</b>, then hit <b>Send</b>. Try the <b>Plays</b> and <b>Play At</b> tabs too. Watch the right players light up.</div>
+
+  <div class="stage">
+    <div class="phone">
+      <div class="topbar">
+        <div class="homebtn" title="Home"><svg viewBox="0 0 24 24" width="17" height="17"><path class="house" d="M3 11 L12 4 L21 11 M5 9.5 V20 H19 V9.5 M10 20 V14 H14 V20"/></svg></div>
+        <div class="who">MAYA · RHP</div>
+        <div class="ack" id="ack">●●● 3 watches</div>
+      </div>
+      <div class="tabs">
+        <div class="tab on" data-tab="pitch">Pitch</div>
+        <div class="tab" data-tab="plays">Plays</div>
+        <div class="tab" data-tab="playat">Play At</div>
+      </div>
+      <div id="body"></div>
+      <div class="send-row"><div class="send" id="send">SEND ▶</div></div>
+    </div>
+
+    <div class="watches">
+      <div class="wcol">
+        <div class="watch" id="w-bat"></div>
+        <div class="wname">Pitcher &amp; Catcher</div><div class="wrole">battery</div>
+      </div>
+      <div class="wcol">
+        <div class="watch" id="w-inf"></div>
+        <div class="wname">Infield</div><div class="wrole">middle / corners</div>
+      </div>
+      <div class="wcol">
+        <div class="watch" id="w-out"></div>
+        <div class="wname">Outfield</div><div class="wrole">positioning</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    Interactive concept — taps are simulated, not a live connection.
+    <br><span class="reset" id="reset">↺ reset demo</span>
+  </div>
+</div>
+
+<div class="toast" id="toast">Sent ✓</div>
+
+<script>
+(function(){
+  var PITCH={FB:'FASTBALL',CB:'CURVEBALL',CH:'CHANGEUP',SL:'SLIDER'};
+  var PRESETS=[{p:'CB',loc:8,l:'CB',s:'LOW'},{p:'FB',loc:5,l:'FB',s:'AWAY'},{p:'CH',loc:7,l:'CH',s:'DOWN'}];
+  var state={tab:'pitch',pitch:'CB',loc:8,play:null,base:null,
+             bat:{pitch:'CB',loc:8,banner:null}, inf:{type:'ready'}, out:{type:'ready'}};
+
+  var body=document.getElementById('body');
+
+  function presetIdx(){for(var i=0;i<PRESETS.length;i++){if(PRESETS[i].p===state.pitch&&PRESETS[i].loc===state.loc)return i;}return -1;}
+  function renderBody(){
+    if(state.tab==='pitch'){
+      var pi=presetIdx();
+      var h='<div class="lbl">PRESETS</div><div class="presets">';
+      PRESETS.forEach(function(pr,i){h+='<div class="pre'+(i===pi?' on':'')+'" data-pre="'+i+'">'+pr.l+' <small>'+pr.s+'</small></div>';});
+      h+='</div><div class="lbl">PITCH</div><div class="pills">';
+      ['FB','CB','CH','SL'].forEach(function(p){h+='<div class="pill'+(state.pitch===p?' on':'')+'" data-pitch="'+p+'">'+p+'</div>';});
+      h+='</div><div class="lbl">LOCATION</div><div class="grid">';
+      for(var z=0;z<9;z++){h+='<div class="gc'+(state.loc===z?' sel':'')+'" data-loc="'+z+'"></div>';}
+      h+='</div>';
+      body.innerHTML=h;
+    } else if(state.tab==='plays'){
+      var plays=['PITCHOUT','PICK 1B','PICK 2B','PICK 3B','1ST–3RD','BUNT D','NO DBLS','IBB'];
+      var h='<div class="lbl">DEFENSIVE / SPECIAL PLAYS</div><div class="plist">';
+      plays.forEach(function(p){h+='<div class="pl'+(state.play===p?' on':'')+'" data-play="'+p+'">'+p+'</div>';});
+      h+='</div>';
+      body.innerHTML=h;
+    } else {
+      var bases=['1B','2B','3B','HOME'];
+      var h='<div class="lbl">WHERE\'S THE PLAY?</div><div class="pa-wrap">'+diamond(state.base,'#ff9f0a',118)+'<div class="pa-opts">';
+      bases.forEach(function(b){h+='<div class="pa'+(state.base===b?' on':'')+'" data-base="'+b+'">'+b+'</div>';});
+      h+='</div></div>';
+      body.innerHTML=h;
+    }
+  }
+
+  function diamond(lit,color,size){
+    var pts={'1B':[100,60],'2B':[60,20],'3B':[20,60],'HOME':[60,100]};
+    var s='<svg viewBox="0 0 120 120" width="'+size+'" height="'+size+'"><polygon points="60,100 100,60 60,20 20,60" fill="none" stroke="#3a3a3c" stroke-width="3"/>';
+    Object.keys(pts).forEach(function(k){
+      var x=pts[k][0]-5,y=pts[k][1]-5,on=(k===lit);
+      s+='<rect x="'+x+'" y="'+y+'" width="10" height="10" rx="2" fill="'+(on?color:'#48484a')+'"'+(on?' filter="drop-shadow(0 0 6px '+color+')"':'')+'/>';
+    });
+    return s+'</svg>';
+  }
+
+  function renderBat(){
+    var b=state.bat,el=document.getElementById('w-bat');
+    var h=b.banner?'<div class="banner">'+b.banner+'</div>':'';
+    h+='<div class="b-grid"><div class="zone">';
+    for(var z=0;z<9;z++){h+=(z===b.loc)?'<div class="z hot">'+b.pitch+'</div>':'<div class="z"></div>';}
+    h+='</div></div><div class="b-foot">'+PITCH[b.pitch]+'</div>';
+    el.innerHTML=h;
+  }
+  function renderInf(){
+    var m=state.inf,el=document.getElementById('w-inf'),h;
+    if(m.type==='pick'){h='<div class="fw">'+diamond(m.base,'#ff9f0a',98)+'<div class="ftitle" style="color:#ff9f0a">PICK</div><div class="fsub">'+m.base+' BASE</div></div>';}
+    else if(m.type==='playat'){h='<div class="fw">'+diamond(m.base,'#5ac8fa',98)+'<div class="ftitle" style="color:#5ac8fa">PLAY AT</div><div class="fsub">'+m.base+'</div></div>';}
+    else if(m.type==='bunt'){h='<div class="fw"><div class="ftitle" style="color:#ff9f0a">BUNT</div><div class="fsub">CRASH</div></div>';}
+    else if(m.type==='firstthird'){h='<div class="fw"><div class="ftitle" style="color:#ff9f0a;font-size:18px">1ST–3RD</div><div class="fsub">DEFENSE</div></div>';}
+    else{h='<div class="fw ready">'+diamond(null,'#48484a',92)+'<div class="fsub">READY</div></div>';}
+    el.innerHTML=h;
+  }
+  function renderOut(){
+    var m=state.out,el=document.getElementById('w-out'),h;
+    if(m.type==='nodoubles'){
+      h='<div class="fw"><svg viewBox="0 0 120 120" width="96" height="96"><polygon points="60,96 96,60 60,24 24,60" fill="none" stroke="#3a3a3c" stroke-width="3"/>'+
+        '<circle cx="30" cy="24" r="6" fill="#30d158"/><circle cx="60" cy="14" r="6" fill="#30d158"/><circle cx="90" cy="24" r="6" fill="#30d158"/></svg>'+
+        '<div class="ftitle" style="color:#30d158;font-size:17px">NO DOUBLES</div><div class="fsub">PLAY DEEP</div></div>';
+    } else if(m.type==='playat'){h='<div class="fw">'+diamond(m.base,'#5ac8fa',96)+'<div class="ftitle" style="color:#5ac8fa">PLAY AT</div><div class="fsub">'+m.base+'</div></div>';}
+    else{h='<div class="fw ready"><div class="ftitle" style="font-size:18px">READY</div><div class="fsub">play straight</div></div>';}
+    el.innerHTML=h;
+  }
+  function renderWatches(){renderBat();renderInf();renderOut();}
+
+  function buzz(ids){
+    ids.forEach(function(id){var el=document.getElementById(id);el.classList.remove('buzz','flash');void el.offsetWidth;el.classList.add('buzz','flash');});
+    var a=document.getElementById('ack');a.textContent='✓✓✓ delivered';a.classList.add('pulse');
+    setTimeout(function(){a.classList.remove('pulse');a.textContent='●●● 3 watches';},1100);
+    toast();
+  }
+  var tt;
+  function toast(){var t=document.getElementById('toast');t.classList.add('show');clearTimeout(tt);tt=setTimeout(function(){t.classList.remove('show');},1100);}
+
+  function send(){
+    if(state.tab==='pitch'){
+      state.bat={pitch:state.pitch,loc:state.loc,banner:null};
+      renderBat();buzz(['w-bat']);
+    } else if(state.tab==='plays'){
+      var p=state.play;if(!p)return;
+      if(p.indexOf('PICK')===0){var bs=p.split(' ')[1];state.bat.banner='PICK · '+bs;state.inf={type:'pick',base:bs};renderBat();renderInf();buzz(['w-bat','w-inf']);}
+      else if(p==='PITCHOUT'){state.bat.banner='PITCHOUT';renderBat();buzz(['w-bat']);}
+      else if(p==='IBB'){state.bat.banner='IBB';renderBat();buzz(['w-bat']);}
+      else if(p==='1ST–3RD'){state.inf={type:'firstthird'};renderInf();buzz(['w-inf']);}
+      else if(p==='BUNT D'){state.inf={type:'bunt'};renderInf();buzz(['w-inf']);}
+      else if(p==='NO DBLS'){state.out={type:'nodoubles'};renderOut();buzz(['w-out']);}
+    } else {
+      var b=state.base;if(!b)return;
+      state.inf={type:'playat',base:b};state.out={type:'playat',base:b};renderInf();renderOut();buzz(['w-inf','w-out']);
+    }
+  }
+
+  document.querySelectorAll('.tab').forEach(function(t){t.addEventListener('click',function(){
+    document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('on');});t.classList.add('on');
+    state.tab=t.getAttribute('data-tab');renderBody();
+  });});
+  body.addEventListener('click',function(e){
+    var t=e.target.closest('[data-pre],[data-pitch],[data-loc],[data-play],[data-base]');if(!t)return;
+    if(t.hasAttribute('data-pre')){var pr=PRESETS[+t.getAttribute('data-pre')];state.pitch=pr.p;state.loc=pr.loc;}
+    else if(t.hasAttribute('data-pitch')){state.pitch=t.getAttribute('data-pitch');}
+    else if(t.hasAttribute('data-loc')){state.loc=+t.getAttribute('data-loc');}
+    else if(t.hasAttribute('data-play')){state.play=t.getAttribute('data-play');}
+    else if(t.hasAttribute('data-base')){state.base=t.getAttribute('data-base');}
+    renderBody();
+  });
+  document.getElementById('send').addEventListener('click',send);
+  document.querySelector('.homebtn').addEventListener('click',function(){var t=document.getElementById('toast');t.textContent='Home / End-game menu (in the full app)';toast();setTimeout(function(){t.textContent='Sent ✓';},1400);});
+  document.getElementById('reset').addEventListener('click',function(){
+    state={tab:'pitch',pitch:'CB',loc:8,play:null,base:null,bat:{pitch:'CB',loc:8,banner:null},inf:{type:'ready'},out:{type:'ready'}};
+    document.querySelectorAll('.tab').forEach(function(x){x.classList.toggle('on',x.getAttribute('data-tab')==='pitch');});
+    renderBody();renderWatches();
+  });
+
+  renderBody();renderWatches();
+})();
+</script>
+</body>
+</html>

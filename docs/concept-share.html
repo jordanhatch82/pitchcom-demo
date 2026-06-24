@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pitch-Caller — Concept</title>
+<style>
+  * { box-sizing:border-box; }
+  body { margin:0; background:#eef0f4; color:#1c1c1e; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; -webkit-font-smoothing:antialiased; }
+  .page { max-width:780px; margin:0 auto; padding:48px 28px 64px; }
+  .hero { text-align:center; margin-bottom:14px; }
+  .hero h1 { font-size:34px; margin:0 0 8px; letter-spacing:-.5px; }
+  .hero p { font-size:17px; color:#6e6e73; margin:0; }
+  .lead { font-size:17px; line-height:1.55; text-align:center; max-width:620px; margin:18px auto 0; }
+  .lead b { color:#1c1c1e; }
+  section { margin-top:46px; }
+  .sec-h { font-size:13px; letter-spacing:1.5px; text-transform:uppercase; color:#0a84ff; font-weight:800; text-align:center; }
+  .sec-t { font-size:23px; text-align:center; margin:6px 0 4px; }
+  .sec-d { font-size:15.5px; line-height:1.5; color:#48484a; text-align:center; max-width:600px; margin:0 auto 22px; }
+  .stage { display:flex; gap:26px; justify-content:center; flex-wrap:wrap; align-items:flex-start; }
+  .cap { text-align:center; font-size:13.5px; color:#6e6e73; margin-top:12px; max-width:230px; }
+  .cap b { color:#1c1c1e; }
+
+  .phone { width:236px; background:#000; border-radius:38px; box-shadow:0 0 0 9px #2b2b2e, 0 18px 40px rgba(0,0,0,.28); display:flex; flex-direction:column; overflow:hidden; padding:15px 13px; gap:10px; text-align:left; }
+  .watch { width:180px; height:222px; background:#000; border-radius:40px; box-shadow:0 0 0 9px #2b2b2e, 0 18px 40px rgba(0,0,0,.28); display:flex; flex-direction:column; overflow:hidden; }
+
+  .status { display:flex; justify-content:space-between; align-items:center; font-size:12.5px; color:#aeaeb2; font-weight:600; }
+  .homebtn { width:30px; height:30px; background:#2c2c2e; border-radius:8px; display:flex; align-items:center; justify-content:center; }
+  .house { fill:none; stroke:#e5e5ea; stroke-width:2; stroke-linejoin:round; stroke-linecap:round; }
+  .ack { color:#30d158; font-weight:600; }
+  .topbar { display:flex; align-items:center; gap:8px; }
+  .who { flex:1; font-size:12.5px; color:#aeaeb2; font-weight:700; }
+
+  .tabs { display:flex; background:#1c1c1e; border-radius:11px; padding:3px; gap:3px; }
+  .tab { flex:1; text-align:center; padding:7px 0; border-radius:9px; font-weight:700; font-size:12px; color:#8e8e93; }
+  .tab.on { background:#3a3a3c; color:#fff; }
+  .lbl { font-size:10px; letter-spacing:1.5px; color:#8e8e93; font-weight:700; }
+  .presets { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; }
+  .pre { background:#2c2c2e; border-radius:9px; padding:9px 0; text-align:center; font-weight:800; font-size:13px; color:#fff; }
+  .pre small { display:block; font-size:9px; color:#8e8e93; font-weight:600; margin-top:1px; }
+  .pre.on { background:#0a84ff; } .pre.on small { color:#cfe6ff; }
+  .pills { display:flex; gap:5px; }
+  .pill { flex:1; text-align:center; padding:8px 0; border-radius:8px; background:#2c2c2e; color:#e5e5ea; font-weight:700; font-size:13px; }
+  .pill.on { background:#0a84ff; color:#fff; }
+  .grid { display:grid; grid-template-columns:repeat(3,1fr); grid-template-rows:repeat(3,1fr); gap:6px; height:116px; }
+  .gc { background:#2c2c2e; border-radius:8px; } .gc.sel { background:#0a84ff; box-shadow:0 0 12px #0a84ff; }
+  .send-row { display:flex; justify-content:center; }
+  .send { background:#0a84ff; color:#fff; font-weight:800; font-size:14px; padding:9px 34px; border-radius:10px; }
+
+  .b-grid { flex:1; padding:11px; }
+  .zone { display:grid; grid-template-columns:repeat(3,1fr); grid-template-rows:repeat(3,1fr); gap:4px; height:100%; }
+  .z { background:#2c2c2e; border-radius:6px; }
+  .z-hot { background:#0a84ff; box-shadow:0 0 14px #0a84ff; display:flex; align-items:center; justify-content:center; color:#fff; font-size:22px; font-weight:800; }
+  .banner { background:#ff9f0a; color:#000; font-weight:800; font-size:12px; padding:5px 0; letter-spacing:1px; text-align:center; }
+  .b-foot { padding:6px 0 10px; font-size:13px; color:#aeaeb2; font-weight:600; letter-spacing:1px; text-align:center; }
+  .f-wrap { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:7px; }
+  .f-title { font-size:22px; font-weight:800; } .f-sub { font-size:13px; color:#aeaeb2; font-weight:600; letter-spacing:1px; }
+
+  .h-body { flex:1; display:flex; flex-direction:column; padding:4px 2px; gap:10px; }
+  .h-team { display:flex; justify-content:space-between; font-size:16px; font-weight:800; color:#fff; }
+  .h-sw { color:#8e8e93; font-size:12px; }
+  .start { background:#0a84ff; color:#fff; border-radius:13px; padding:15px; font-weight:800; font-size:16px; text-align:center; }
+  .tiles { display:grid; grid-template-columns:1fr 1fr; gap:9px; }
+  .tile { background:#2c2c2e; border-radius:12px; padding:15px 10px; font-weight:700; font-size:13px; color:#e5e5ea; text-align:center; }
+  .tile .ic { font-size:18px; display:block; margin-bottom:5px; }
+
+  .qbox { margin-top:46px; background:#fff; border-radius:18px; padding:26px 30px; box-shadow:0 8px 30px rgba(0,0,0,.06); }
+  .qbox h2 { margin:0 0 4px; font-size:20px; }
+  .qbox p.sub { margin:0 0 14px; color:#6e6e73; font-size:14.5px; }
+  .qbox ol { margin:0; padding-left:20px; line-height:1.7; font-size:15.5px; }
+  .foot { text-align:center; color:#8e8e93; font-size:13px; margin-top:30px; }
+  .notes { font-size:13.5px; color:#6e6e73; text-align:center; max-width:560px; margin:8px auto 0; line-height:1.5; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="hero">
+    <h1>⚾ Call pitches from your phone.</h1>
+    <p>They show up on your players' Apple Watches — instantly.</p>
+  </div>
+  <p class="lead">Hand signals get missed, stolen, and slow everything down. Instead: you tap the call on your phone, and a half-second later the right players feel a <b>buzz on their wrist</b> and see exactly what's coming — in a display made for where they play.</p>
+
+  <section>
+    <div class="sec-h">What you tap</div>
+    <div class="sec-t">The coach's phone</div>
+    <div class="sec-d">One tap on a favorite call, or build it: pick the pitch, tap the spot, hit Send. Separate tabs handle plays and "where's the play."</div>
+    <div class="stage">
+      <div class="phone">
+        <div class="topbar">
+          <div class="homebtn"><svg viewBox="0 0 24 24" width="16" height="16"><path class="house" d="M3 11 L12 4 L21 11 M5 9.5 V20 H19 V9.5 M10 20 V14 H14 V20"/></svg></div>
+          <div class="who">MAYA · RHP</div><div class="ack" style="font-size:12px">✓✓ 3 watches</div>
+        </div>
+        <div class="tabs"><div class="tab on">Pitch</div><div class="tab">Plays</div><div class="tab">Play At</div></div>
+        <div class="lbl">PRESETS</div>
+        <div class="presets"><div class="pre on">CB <small>LOW</small></div><div class="pre">FB <small>AWAY</small></div><div class="pre">CH <small>DOWN</small></div></div>
+        <div class="lbl">PITCH</div>
+        <div class="pills"><div class="pill">FB</div><div class="pill on">CB</div><div class="pill">CH</div><div class="pill">SL</div></div>
+        <div class="lbl">LOCATION</div>
+        <div class="grid"><div class="gc"></div><div class="gc"></div><div class="gc"></div><div class="gc"></div><div class="gc"></div><div class="gc"></div><div class="gc"></div><div class="gc"></div><div class="gc sel"></div></div>
+        <div class="send-row"><div class="send">SEND ▶</div></div>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:center"><div class="cap">The green check confirms <b>how many watches got the call.</b></div></div>
+  </section>
+
+  <section>
+    <div class="sec-h">What players see</div>
+    <div class="sec-t">A display made for their position</div>
+    <div class="sec-d">Nobody stares at info that isn't theirs. The wrist buzzes on a new call, so they just glance when it taps them.</div>
+    <div class="stage">
+      <div>
+        <div class="watch">
+          <div class="banner">PICK · 1B</div>
+          <div class="b-grid"><div class="zone"><div class="z"></div><div class="z"></div><div class="z"></div><div class="z"></div><div class="z"></div><div class="z"></div><div class="z"></div><div class="z"></div><div class="z-hot">CB</div></div></div>
+          <div class="b-foot">CURVEBALL</div>
+        </div>
+        <div class="cap"><b>Pitcher &amp; catcher</b><br>pitch + exact location</div>
+      </div>
+      <div>
+        <div class="watch"><div class="f-wrap">
+          <svg viewBox="0 0 120 120" width="104" height="104">
+            <polygon points="60,100 100,60 60,20 20,60" fill="none" stroke="#3a3a3c" stroke-width="3"/>
+            <rect x="55" y="95" width="10" height="10" rx="2" fill="#48484a"/><rect x="95" y="55" width="10" height="10" rx="2" fill="#48484a"/>
+            <rect x="55" y="15" width="10" height="10" rx="2" fill="#ff9f0a"/><rect x="15" y="55" width="10" height="10" rx="2" fill="#48484a"/>
+          </svg>
+          <div class="f-title" style="color:#ff9f0a">PICK</div><div class="f-sub">2ND BASE</div>
+        </div></div>
+        <div class="cap"><b>Infielders</b><br>the play, on a diamond</div>
+      </div>
+      <div>
+        <div class="watch"><div class="f-wrap">
+          <svg viewBox="0 0 120 120" width="104" height="104">
+            <polygon points="60,96 96,60 60,24 24,60" fill="none" stroke="#3a3a3c" stroke-width="3"/>
+            <circle cx="30" cy="24" r="6" fill="#30d158"/><circle cx="60" cy="14" r="6" fill="#30d158"/><circle cx="90" cy="24" r="6" fill="#30d158"/>
+          </svg>
+          <div class="f-title" style="color:#30d158;font-size:18px">NO DOUBLES</div><div class="f-sub">PLAY DEEP</div>
+        </div></div>
+        <div class="cap"><b>Outfielders</b><br>where to position</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-h">Before the game</div>
+    <div class="sec-t">Set up your team once</div>
+    <div class="sec-d">Roster, who's pitching and what they throw, and your go-to calls. Then just hit Start Game.</div>
+    <div class="stage">
+      <div class="phone">
+        <div class="h-body">
+          <div class="h-team">Wildcats 12U <span class="h-sw">switch ⌄</span></div>
+          <div class="start">▶  Start Game</div>
+          <div class="lbl" style="text-align:center">MANAGE</div>
+          <div class="tiles"><div class="tile"><span class="ic">👥</span>Roster</div><div class="tile"><span class="ic">⚾</span>Pitchers</div><div class="tile"><span class="ic">▦</span>Presets</div><div class="tile"><span class="ic">📅</span>Schedule</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <p class="notes">A couple of honest notes: it doesn't decide whether your league allows devices on the field — that's the coaches' call. And it's not a scorekeeper; it just sends the calls. The watches connect over cell or a hotspot you bring; it only struggles where there's truly no signal at all.</p>
+
+  <div class="qbox">
+    <h2>I'd love your honest take</h2>
+    <p class="sub">Brutal honesty welcome — this is just an idea right now.</p>
+    <ol>
+      <li><b>Would you actually use this</b> during a game? Why or why not?</li>
+      <li>What feels <b>confusing or missing</b>?</li>
+      <li>Most kids don't own an Apple Watch, so a coach would provide a few. <b>Dealbreaker, or manageable?</b></li>
+      <li>Would you rather the call <b>show on screen</b> (like this) or <b>play quietly in an earpiece</b>?</li>
+      <li>Is this something you'd <b>pay for</b>? What feels fair?</li>
+      <li>Anything about <b>your team or league</b> that would make or break it?</li>
+    </ol>
+  </div>
+
+  <p class="foot">Thanks for taking a look. — concept mockups, not final designs</p>
+
+</div>
+</body>
+</html>
