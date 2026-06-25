@@ -53,6 +53,10 @@ Then on game day you just hit **Start Game** and go.
 - It's **not** deciding whether your league allows electronic devices on the field — that's on the coaches to check and decide.
 - It's **not** a scorekeeping app. It won't track balls/strikes/outs for you — it just sends the calls.
 
+## Try the clickable prototype
+
+I put together an interactive demo you can play with right in your browser at **pitchcom.on-forge.com**. Tap around on the phone to build a call — pick a pitch and a spot, or hit a preset, then press Send — and watch the player watches react the way they would in a real game. One important thing to keep in mind: this is a rough proof-of-concept, not a finished product. The colors, fonts, and exact layout are all placeholders — it's meant to show *how the app would function and flow*, not what the final version will actually look like. So don't worry about the polish; focus on whether the core idea makes sense and feels useful, and tell me where it's confusing or where you'd want it to work differently.
+
 ---
 
 ## What I'd love your feedback on
